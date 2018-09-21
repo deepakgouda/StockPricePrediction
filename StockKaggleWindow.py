@@ -16,14 +16,7 @@ def create_dataset(dataset, look_back = 1):
 		dataY.append(dataset[i + look_back, 0])
 	return np.array(dataX), np.array(dataY)
 
-# np.random.seed(7)
-# dataframe = read_csv('log_inf_small.csv', usecols=[11], 
-# 			engine = 'python', skipfooter=3)
 dataframe = read_csv('sp500.csv')
-# fields = ['timestamp', 'open', 'high', 'low', 'close']
-# dataframe = read_csv('log_inf_small.csv', header = 0, 
-# 	parse_dates = [0], date_parser = parser, index_col = 0, 
-# 	skipinitialspace = True, squeeze = True, usecols = fields)
 
 dataset = dataframe.values
 dataset = dataset.astype('float32')
