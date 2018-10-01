@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
-# In[26]:
+# In[47]:
 
 
 import numpy as np
@@ -16,9 +16,10 @@ from sklearn.metrics import mean_squared_error
 from keras.callbacks import TensorBoard
 from time import time
 import itertools
+from math import factorial
 
 
-# In[27]:
+# In[48]:
 
 
 def create_dataset(dataset, look_back = 1):
@@ -30,7 +31,7 @@ def create_dataset(dataset, look_back = 1):
     return np.array(dataX), np.array(dataY)
 
 
-# In[28]:
+# In[49]:
 
 
 def generateData(data, perm):
@@ -45,64 +46,63 @@ def generateData(data, perm):
     return dataSet
 
 
-# In[29]:
+# In[50]:
 
 
 # dataframe = read_csv('sp500.csv')
 fields = ['open', 'close']
 dataframe = read_csv('GOOGL_data.csv', skipinitialspace = True, squeeze = True, usecols = fields)
 
-print(dataframe.head())
-data = np.array(dataframe)
-print(data.shape)
+# print(dataframe.head())
+data = np.array(dataframe)[:30]
+# print(data.shape)
 
 
-# In[30]:
+# In[51]:
 
 
 # dataset = dataset.astype('float32')
 
 scaler = MinMaxScaler(feature_range=(0, 1))
 data = scaler.fit_transform(data)
-print(data[:5])
+# print(data[:5])
 
 
-# In[31]:
+# In[52]:
 
 
 split = 0.75
 trainSize = int(len(data)*split)
 testSize = len(data)-trainSize
-print(trainSize)
-print(testSize)
+# print(trainSize)
+# print(testSize)
 
 
-# In[32]:
+# In[53]:
 
 
 numInterval = 3
 blockSize = trainSize//numInterval
-print(blockSize)
+# print(blockSize)
 
 
-# In[33]:
+# In[54]:
 
 
 train = data[0:trainSize,:]
 test = data[trainSize:len(data),:]
-print(train[:5])
+# print(train[:5])
 
 
-# In[37]:
+# In[55]:
 
 
 # print(train, end="\n\n")
 permutations = itertools.permutations(range(numInterval))
+testBand = []
 for perm in permutations:
-#     print(perm)
     trainSet = generateData(train, perm)
     trainSet = np.reshape(trainSet, trainSet.shape)
-#     print(trainSet)
     shuffleData = np.vstack((trainSet, test))
 
     lookBack = 3
@@ -114,7 +114,7 @@ for perm in permutations:
 
     units = 100
     drop = 0.2
-    epoch = 20
+    epoch = 1
 
     model = Sequential()
     model.add(LSTM(units, input_shape=(lookBack, 2)))
@@ -146,6 +146,7 @@ for perm in permutations:
     testPredictPlot = np.empty_like(shuffleData)
     testPredictPlot[:, :] = np.nan
     testPredictPlot[len(trainPredict)+(lookBack*2)+2:len(data)-1, :] = testPredict
+    testBand.append(testPredict)
 #     testPredictPlot[len(trainPredict)+(lookBack*2)+1:len(data)-1, :] = testPredict
 
     col = 0
@@ -156,13 +157,55 @@ for perm in permutations:
 #     plt.plot(trainPredictPlot[:,col], color = 'orange')
     plt.plot(testPredictPlot[:,col], color = 'green')
     plt.plot(scaler.inverse_transform(testPlot)[:,col], color = 'blue', linewidth = 0.3)
-    plt.title('Units = %d Dropout = %.2f Epoch = %d Split = %d%% Train = %.2f Test = %.2f' % 
-            (units, drop, epoch, split*100, trainScore, testScore))
+#     plt.title('Units = %d Dropout = %.2f Epoch = %d Split = %d%% Train = %.2f Test = %.2f' % 
+#             (units, drop, epoch, split*100, trainScore, testScore))
+# plt.show()
+
+
+# In[56]:
+
+
+# print(np.mean(testBand[0], axis = 0))
+# print(np.std(testBand[0], axis = 0))
+
+
+# In[57]:
+
+
+z_alpha = 1.96
+n = factorial(numInterval)
+
+confInterval = []
+
+for X in testBand:
+    xBar = np.mean(X, axis = 0)
+    s = np.std(X, axis = 0)
+    l = xBar - 1.96*s/(n**0,.5)
+    r = xBar + 1.96*s/(n**0,.5)
+    pair = [l, r]
+    confInterval.append(pair)
+
+
+# In[58]:
+
+
+# confInterval
+
+
+# In[59]:
+
+
+col = 0
+lower = []
+upper = []
+for i in range(len(confInterval)):
+#     X = [i, i]
+#     Y = [confInterval[i][0][0], confInterval[i][1][0]]
+    lower.append(confInterval[i][0][0])
+    upper.append(confInterval[i][1][0])
+print(lower)
+print(upper)
+plt.plot(lower)
+plt.plot(upper)
 plt.show()
-
-
-# In[ ]:
-
-
-
 
