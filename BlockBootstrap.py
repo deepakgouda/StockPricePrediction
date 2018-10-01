@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[47]:
+# In[1]:
 
 
 import numpy as np
@@ -19,7 +19,7 @@ import itertools
 from math import factorial
 
 
-# In[48]:
+# In[2]:
 
 
 def create_dataset(dataset, look_back = 1):
@@ -31,7 +31,7 @@ def create_dataset(dataset, look_back = 1):
     return np.array(dataX), np.array(dataY)
 
 
-# In[49]:
+# In[3]:
 
 
 def generateData(data, perm):
@@ -46,7 +46,7 @@ def generateData(data, perm):
     return dataSet
 
 
-# In[50]:
+# In[4]:
 
 
 # dataframe = read_csv('sp500.csv')
@@ -54,11 +54,11 @@ fields = ['open', 'close']
 dataframe = read_csv('GOOGL_data.csv', skipinitialspace = True, squeeze = True, usecols = fields)
 
 # print(dataframe.head())
-data = np.array(dataframe)[:30]
+data = np.array(dataframe)
 # print(data.shape)
 
 
-# In[51]:
+# In[5]:
 
 
 # dataset = dataset.astype('float32')
@@ -68,7 +68,7 @@ data = scaler.fit_transform(data)
 # print(data[:5])
 
 
-# In[52]:
+# In[6]:
 
 
 split = 0.75
@@ -78,7 +78,7 @@ testSize = len(data)-trainSize
 # print(testSize)
 
 
-# In[53]:
+# In[7]:
 
 
 numInterval = 3
@@ -86,7 +86,7 @@ blockSize = trainSize//numInterval
 # print(blockSize)
 
 
-# In[54]:
+# In[8]:
 
 
 train = data[0:trainSize,:]
@@ -94,7 +94,7 @@ test = data[trainSize:len(data),:]
 # print(train[:5])
 
 
-# In[55]:
+# In[9]:
 
 
 # print(train, end="\n\n")
@@ -162,14 +162,14 @@ for perm in permutations:
 # plt.show()
 
 
-# In[56]:
+# In[10]:
 
 
 # print(np.mean(testBand[0], axis = 0))
 # print(np.std(testBand[0], axis = 0))
 
 
-# In[57]:
+# In[11]:
 
 
 z_alpha = 1.96
@@ -186,16 +186,17 @@ for X in testBand:
     confInterval.append(pair)
 
 
-# In[58]:
+# In[21]:
 
 
 # confInterval
 
 
-# In[59]:
+# In[29]:
 
 
 col = 0
+offset = len(trainPredict)+(lookBack*2)+2
 lower = []
 upper = []
 for i in range(len(confInterval)):
@@ -203,9 +204,12 @@ for i in range(len(confInterval)):
 #     Y = [confInterval[i][0][0], confInterval[i][1][0]]
     lower.append(confInterval[i][0][0])
     upper.append(confInterval[i][1][0])
-print(lower)
-print(upper)
-plt.plot(lower)
-plt.plot(upper)
+XLower = np.array(range(offset+1, data.shape[0], blockSize//n))
+XUpper = np.array(range(offset+1, data.shape[0], blockSize//n))
+# print(XLower)
+# print(np.array(upper)+offset)
+# plt.plot(lower, XLower)
+# plt.plot(upper, XUpper)
+plt.plot(XLower, lower)
+plt.plot(XUpper, upper)
 plt.show()
-
