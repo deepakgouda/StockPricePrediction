@@ -155,9 +155,9 @@ for perm in permutations:
     testPlot = np.vstack((testPlot, test))
 #     plt.plot(scaler.inverse_transform(shuffleData)[:,col])
 #     plt.plot(trainPredictPlot[:,col], color = 'orange')
-    plt.plot(testPredictPlot[:,col], color = 'green')
-    plt.plot(scaler.inverse_transform(testPlot)[:,col], color = 'blue', linewidth = 0.3)
-    plt.title('Epoch = %d Train = %.2f Test = %.2f' % 
+    # plt.plot(testPredictPlot[:,col], color = 'green')
+plt.plot(scaler.inverse_transform(testPlot)[:,col], color = 'blue', linewidth = 0.3)
+plt.title('Epoch = %d Train = %.2f Test = %.2f' % 
             (epoch, trainScore, testScore))
 # plt.show()
 
