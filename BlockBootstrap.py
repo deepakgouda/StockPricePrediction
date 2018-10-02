@@ -81,7 +81,7 @@ testSize = len(data)-trainSize
 # In[39]:
 
 
-numInterval = 3
+numInterval = 4
 blockSize = trainSize//numInterval
 # print(blockSize)
 
@@ -114,7 +114,7 @@ for perm in permutations:
 
     units = 100
     drop = 0.2
-    epoch = 20
+    epoch = 10
 
     model = Sequential()
     model.add(LSTM(units, input_shape=(lookBack, 2)))
@@ -145,7 +145,7 @@ for perm in permutations:
 
     testPredictPlot = np.empty_like(shuffleData)
     testPredictPlot[:, :] = np.nan
-    testPredictPlot[len(trainPredict)+(lookBack*2)+2:len(data)-1, :] = testPredict
+    testPredictPlot[len(trainPredict)+(lookBack*2)+1:len(data)-1, :] = testPredict
     testBand.append(testPredict)
 #     testPredictPlot[len(trainPredict)+(lookBack*2)+1:len(data)-1, :] = testPredict
 
@@ -156,7 +156,7 @@ for perm in permutations:
 #     plt.plot(scaler.inverse_transform(shuffleData)[:,col])
 #     plt.plot(trainPredictPlot[:,col], color = 'orange')
     # plt.plot(testPredictPlot[:,col], color = 'green')
-plt.plot(scaler.inverse_transform(testPlot)[:,col], color = 'blue', linewidth = 0.3)
+plt.plot(scaler.inverse_transform(testPlot)[:,col], color = 'blue')
 plt.title('Epoch = %d Train = %.2f Test = %.2f' % 
             (epoch, trainScore, testScore))
 # plt.show()
@@ -238,8 +238,8 @@ XUpper = np.array(range(offset+1, offset+1+temp.shape[1]))
 # print(np.array(upper)+offset)
 # plt.plot(lower, XLower)
 # plt.plot(upper, XUpper)
-plt.plot(XLower, lower)
-plt.plot(XUpper, upper)
+plt.plot(XLower, lower, color = 'green')
+plt.plot(XUpper, upper, color = 'orange')
 plt.show()
 
 
