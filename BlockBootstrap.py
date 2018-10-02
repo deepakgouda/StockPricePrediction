@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[33]:
 
 
 import numpy as np
@@ -19,7 +19,7 @@ import itertools
 from math import factorial
 
 
-# In[2]:
+# In[34]:
 
 
 def create_dataset(dataset, look_back = 1):
@@ -31,7 +31,7 @@ def create_dataset(dataset, look_back = 1):
     return np.array(dataX), np.array(dataY)
 
 
-# In[3]:
+# In[35]:
 
 
 def generateData(data, perm):
@@ -46,7 +46,7 @@ def generateData(data, perm):
     return dataSet
 
 
-# In[4]:
+# In[36]:
 
 
 # dataframe = read_csv('sp500.csv')
@@ -58,7 +58,7 @@ data = np.array(dataframe)
 # print(data.shape)
 
 
-# In[5]:
+# In[37]:
 
 
 # dataset = dataset.astype('float32')
@@ -68,7 +68,7 @@ data = scaler.fit_transform(data)
 # print(data[:5])
 
 
-# In[6]:
+# In[38]:
 
 
 split = 0.75
@@ -78,7 +78,7 @@ testSize = len(data)-trainSize
 # print(testSize)
 
 
-# In[7]:
+# In[39]:
 
 
 numInterval = 3
@@ -86,7 +86,7 @@ blockSize = trainSize//numInterval
 # print(blockSize)
 
 
-# In[8]:
+# In[40]:
 
 
 train = data[0:trainSize,:]
@@ -94,7 +94,7 @@ test = data[trainSize:len(data),:]
 # print(train[:5])
 
 
-# In[9]:
+# In[41]:
 
 
 # print(train, end="\n\n")
@@ -114,7 +114,7 @@ for perm in permutations:
 
     units = 100
     drop = 0.2
-    epoch = 1
+    epoch = 20
 
     model = Sequential()
     model.add(LSTM(units, input_shape=(lookBack, 2)))
@@ -157,19 +157,44 @@ for perm in permutations:
 #     plt.plot(trainPredictPlot[:,col], color = 'orange')
     plt.plot(testPredictPlot[:,col], color = 'green')
     plt.plot(scaler.inverse_transform(testPlot)[:,col], color = 'blue', linewidth = 0.3)
-#     plt.title('Units = %d Dropout = %.2f Epoch = %d Split = %d%% Train = %.2f Test = %.2f' % 
-#             (units, drop, epoch, split*100, trainScore, testScore))
+    plt.title('Epoch = %d Train = %.2f Test = %.2f' % 
+            (epoch, trainScore, testScore))
 # plt.show()
 
 
-# In[10]:
+# In[42]:
 
 
-# print(np.mean(testBand[0], axis = 0))
-# print(np.std(testBand[0], axis = 0))
+temp = np.array(testBand)
 
 
-# In[11]:
+# In[27]:
+
+
+# temp.shape
+
+
+# In[43]:
+
+
+temp = np.reshape(temp, (temp.shape))
+# print(temp)
+
+
+# In[45]:
+
+
+# temp[:,0,:]
+
+
+# In[46]:
+
+
+# print(np.mean(temp[:,0,:], axis = 0))
+# print(np.std(temp[:,0,:], axis = 0))
+
+
+# In[47]:
 
 
 z_alpha = 1.96
@@ -177,22 +202,23 @@ n = factorial(numInterval)
 
 confInterval = []
 
-for X in testBand:
-    xBar = np.mean(X, axis = 0)
-    s = np.std(X, axis = 0)
+for i in range(temp.shape[1]):
+    temp1 = temp[:, i, :]
+    xBar = np.mean(temp1, axis = 0)
+    s = np.std(temp1, axis = 0)
     l = xBar - 1.96*s/(n**0,.5)
     r = xBar + 1.96*s/(n**0,.5)
     pair = [l, r]
     confInterval.append(pair)
 
 
-# In[21]:
+# In[49]:
 
 
 # confInterval
 
 
-# In[29]:
+# In[50]:
 
 
 col = 0
@@ -204,8 +230,10 @@ for i in range(len(confInterval)):
 #     Y = [confInterval[i][0][0], confInterval[i][1][0]]
     lower.append(confInterval[i][0][0])
     upper.append(confInterval[i][1][0])
-XLower = np.array(range(offset+1, data.shape[0], blockSize//n))
-XUpper = np.array(range(offset+1, data.shape[0], blockSize//n))
+# XLower = np.array(range(offset+1, data.shape[0], blockSize//n))
+# XUpper = np.array(range(offset+1, data.shape[0], blockSize//n))
+XLower = np.array(range(offset+1, offset+1+temp.shape[1]))
+XUpper = np.array(range(offset+1, offset+1+temp.shape[1]))
 # print(XLower)
 # print(np.array(upper)+offset)
 # plt.plot(lower, XLower)
@@ -213,3 +241,10 @@ XUpper = np.array(range(offset+1, data.shape[0], blockSize//n))
 plt.plot(XLower, lower)
 plt.plot(XUpper, upper)
 plt.show()
+
+
+# In[51]:
+
+
+# np.array(range(offset+1, data.shape[0], blockSize//n))
+
