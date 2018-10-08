@@ -90,7 +90,7 @@ blockSize = trainSize//numInterval
 
 
 train = data[0:trainSize,:]
-test = data[trainSize:len(data),:]
+test = data[trainSize:len(data), :]
 # print(train[:5])
 
 
