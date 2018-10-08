@@ -1,0 +1,7 @@
+// Confidence Band Report draft. Further details and explanations to be added.
+
+The following results were obtained by training an LSTM model on the stock price data of Google, taken from SP500 dataset. 
+
+The input is the 2-dimensional(Opening and Closing prices). The training data shape is (944, 2) and it was split into 4 non-overlapping intervals of block size 236 each. 
+
+The blocks were shuffled to generate all permutations and for each permutation the model was trained and the resulting prediction was stored. Finally, the 95% confidence interval of predictions at each time step was calculated and a confidence band was calculated.
